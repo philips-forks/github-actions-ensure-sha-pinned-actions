@@ -3,21 +3,27 @@ on:
   pull_request:
     branches:
       - main
-permissions:
-  contents: write
 jobs:
   security_hardening:
     name: Check security hardening
     runs-on: ubuntu-latest
+    needs: testing
+    permissions:
+      contents: read
     steps:
       - name: Clone the repository
         uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # ratchet:actions/checkout@v3.2.0
+      - uses: actions/download-artifact@9782bd6a9848b53b110e712e20e42d89988822b7 # ratchet:actions/download-artifact@v3
+        with:
+          name: dist
       - name: Ensure SHA pinned actions
         uses: ./
   testing:
     name: Run testing
-    needs: security_hardening
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
     steps:
       - name: Clone the repository
         uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # ratchet:actions/checkout@v3.2.0
@@ -33,6 +39,11 @@ jobs:
         run: npm run test
       - name: Preparer
         run: npm run prepare
+      - uses: actions/upload-artifact@83fd05a356d7e2593de66fc9913b3002723633cb # ratchet:actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
       - name: Update dist
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -43,8 +54,52 @@ jobs:
           DIFF=$(git diff-index HEAD dist/)
           if [ "$DIFF" ]
           then
-            git commit -m "chore: Update action dist" dist/index.js
+            echo "Distribution is changed."
+          else
+            echo "Distribution is up-to-date."
+          fi
+
+  update_dist:
+    name: Update dist
+    runs-on: ubuntu-latest
+    needs: testing
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Clone the repository
+        uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # ratchet:actions/checkout@v3.2.0
+      - run: |
+          ls -la
+          ls -la dist
+      - uses: actions/download-artifact@9782bd6a9848b53b110e712e20e42d89988822b7 # ratchet:actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist/
+      - name: Update dist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr checkout ${{ github.event.pull_request.number }}
+          git config --global user.name "action-bot"
+          git config --global user.email "action-bot@philips.com"
+          DIFF=$(git diff-index HEAD dist/)
+          if [ "$DIFF" ]
+          then
+            git add --all dist/
+            git commit -m "chore: Update action dist" -m "skip-checks: true" dist/
             git push
           else
             echo "Distribution is up-to-date."
           fi
+          run: |
+              curl --request POST \
+              --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+              --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+              --header 'content-type: application/json' \
+              --data '{
+                "context": "Run testing",
+                "state": "success",
+                "description": "Skipping check for dist update",
+                "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+              }'
