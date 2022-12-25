@@ -11378,7 +11378,7 @@ async function run() {
     const workflowsPath = process.env['ZG_WORKFLOWS_PATH'] || '.github/workflows';
     const globber = await glob.create([workflowsPath + '/*.yaml', workflowsPath + '/*.yml'].join('\n'));
     let actionHasError = false;
-    console.log('Checking for unpinned GitHub Action versions...')
+
     for await (const file of globber.globGenerator()) {
       const basename = path.basename(file);
       const fileContents = fs.readFileSync(file, 'utf8');
