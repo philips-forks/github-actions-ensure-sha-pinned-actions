@@ -76,10 +76,6 @@ jobs:
         with:
           name: dist
           path: dist/
-      - run: |
-          ls -la
-          ls -la dist
-          git status
       - name: Update dist
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
