@@ -5,7 +5,7 @@ permissions:
   contents: write
 jobs:
   dependabot:
-    runs-on: [self-hosted, x64, linux, philips]
+    runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
       - name: Dependabot metadata
