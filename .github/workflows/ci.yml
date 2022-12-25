@@ -44,6 +44,21 @@ jobs:
           name: dist
           path: dist/
           retention-days: 1
+      - name: Update dist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr checkout ${{ github.event.pull_request.number }}
+          git config --global user.name "action-bot"
+          git config --global user.email "action-bot@philips.com"
+          DIFF=$(git diff-index HEAD dist/)
+          if [ "$DIFF" ]
+          then
+            echo "Distribution is changed."
+          else
+            echo "Distribution is up-to-date."
+          fi
+
   update_dist:
     name: Update dist
     runs-on: ubuntu-latest
