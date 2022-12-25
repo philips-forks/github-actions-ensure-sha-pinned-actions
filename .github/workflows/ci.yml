@@ -90,7 +90,8 @@ jobs:
           DIFF=$(git diff-index HEAD dist/)
           if [ "$DIFF" ]
           then
-            git commit -m "chore: Update action dist" dist/index.js
+            git add --all dist/
+            git commit -m "chore: Update action dist" -m "skip-checks: true" dist/
             git push
           else
             echo "Distribution is up-to-date."
