@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/philips-forks/github-actions-ensure-sha-pinned-actions/compare/v1.0.0...v1.1.0) (2023-03-16)
+
+
+### Features
+
+* bump to v2.1.2 ([#30](https://github.com/philips-forks/github-actions-ensure-sha-pinned-actions/issues/30)) ([3acd8f8](https://github.com/philips-forks/github-actions-ensure-sha-pinned-actions/commit/3acd8f85ea1f511dc6ecfee55055c0e5008eb460))
+
 ## 1.0.0 (2022-12-23)
 
 
