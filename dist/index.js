@@ -13634,7 +13634,6 @@ GitHub now provides native SHA pinning enforcement. Please migrate to using GitH
 
 ### Migration Resources
 
-- [Philips Internal Docs](https://portal.internal.philips/docs/default/Component/github-runners/actions/#sha-pinning-enforcement)
 - [Official GitHub Docs](https://docs.github.com/en/actions/reference/security/secure-use#using-third-party-actions)
 
 ### Action
