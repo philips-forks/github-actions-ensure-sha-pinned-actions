@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/philips-forks/github-actions-ensure-sha-pinned-actions/compare/v1.1.0...v1.2.0) (2025-11-10)
+
+
+### Features
+
+* add deprecation notice and migration guidance for SHA pinning action ([c53bc83](https://github.com/philips-forks/github-actions-ensure-sha-pinned-actions/commit/c53bc8308fc308ea784a68ef3a09f409f8d60ba4))
+
 ## [1.1.0](https://github.com/philips-forks/github-actions-ensure-sha-pinned-actions/compare/v1.0.0...v1.1.0) (2023-03-16)
 
 
