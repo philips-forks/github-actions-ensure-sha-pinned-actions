@@ -13610,6 +13610,43 @@ const sha256 = /\b[A-Fa-f0-9]{64}\b/i;
 
 async function run() {
   try {
+    // DEPRECATION NOTICE
+    const deprecationMessage = `⚠️  DEPRECATION NOTICE: This action is deprecated and will be removed in a future version.
+
+GitHub now provides native SHA pinning enforcement. Please migrate to using GitHub's built-in security features instead.
+
+For more information, see:
+- Official GitHub Docs: https://docs.github.com/en/actions/reference/security/secure-use#using-third-party-actions
+
+This action will continue to work for now, but please plan to migrate away from it.`;
+
+    core.warning(deprecationMessage);
+
+    // Add to job summary (only if running in GitHub Actions environment)
+    if (process.env.GITHUB_STEP_SUMMARY) {
+      try {
+        await core.summary
+          .addHeading('⚠️ Deprecation Notice')
+          .addRaw(`
+This action (\`github-actions-ensure-sha-pinned-actions\`) is **deprecated** and will be removed in a future version.
+
+GitHub now provides native SHA pinning enforcement. Please migrate to using GitHub's built-in security features instead.
+
+### Migration Resources
+
+- [Philips Internal Docs](https://portal.internal.philips/docs/default/Component/github-runners/actions/#sha-pinning-enforcement)
+- [Official GitHub Docs](https://docs.github.com/en/actions/reference/security/secure-use#using-third-party-actions)
+
+### Action
+Please plan to migrate away from this action. It will continue to work for now, but support will be discontinued.
+          `)
+          .write();
+      } catch (summaryError) {
+        // Silently continue if job summary fails - the warning is the important part
+        core.debug('Failed to write job summary: ' + summaryError.message);
+      }
+    }
+
     const allowlist = core.getInput('allowlist');
     const isDryRun = core.getInput('dry_run') === 'true';
     const workflowsPath = process.env['ZG_WORKFLOWS_PATH'] || '.github/workflows';
